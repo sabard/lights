@@ -1,0 +1,49 @@
+import time
+
+import sounddevice as sd
+from numpy import int16
+
+from libc.stdint cimport uint8_t
+
+cdef class SounddeviceSourceDriver(source_driver.SourceDriver):
+    def __cinit__(self):
+        fs = 48000
+        sd.default.samplerate = fs
+        sd.default.device = 2
+
+        # blocking/sync
+        self.stream = sd.InputStream(
+            samplerate=fs,
+            blocksize=48,
+            channels=1,
+            dtype=int16,
+            latency=0.001,
+        )
+        self.stream.start()
+
+        # non-blocking/async
+        # self.sleep_duration = {{config["config"]["tick_len"]}} / (2. * 1e6)
+
+    cdef size_t run(
+        self, times_t *times, void *inBuf, size_t packetSize, object out_sigs
+    ) except *:
+
+        read_len = 480
+
+        if self.stream.read_available > read_len:
+            read_len = self.stream.read_available
+
+        data, overflowed = self.stream.read(read_len)
+
+        print(data.shape, flush=True)
+
+{%- if async %}
+
+        time.sleep(self.sleep_duration)
+{%- endif %}
+
+        return 1
+
+    cdef void exit_handler(self, int exitStatus) except *:
+        self.stream.stop()
+

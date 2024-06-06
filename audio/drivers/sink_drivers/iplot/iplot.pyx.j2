@@ -1,0 +1,31 @@
+import numpy as np
+from matplotlib import pyplot as plt
+
+
+cdef class IplotSinkDriver(sink_driver.SinkDriver):
+    def __cinit__(self):
+        channels = [1]
+        window = 200
+        samplerate = 48000
+        downsample = 10
+
+        length = int(window * samplerate / (1000 * downsample))
+        self.plotdata = np.zeros((length, len(channels)))
+
+        plt.plot(self.plotdata)
+        plt.draw()
+        plt.pause(0.001)
+
+    cdef void run(
+        self, times_t *times, void *outBuf, size_t outBufLen, object in_sigs,
+        object in_sig_lens
+    ) except *:
+
+        plt.plot(self.plotdata)
+        plt.draw()
+        plt.pause(0.001)
+
+
+    cdef void exit_handler(self, int exitStatus) except *:
+        pass
+

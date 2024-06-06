@@ -1,0 +1,68 @@
+# Output a sine wave over line out
+
+config:
+  tick_len: 10000
+  num_ticks: -1
+  source_init_ticks: 2
+
+  # user-defined config
+  # TODO merge with sink args
+  sampling_rate: 48000
+
+signals:
+  audio_raw:
+    shape: (480, )
+    dtype: int16
+    history: 10000
+
+
+modules:
+  audio_in:
+    language: python
+    in:
+      async: True
+      name: audio_in
+      args:
+        type:
+          sounddevice
+      schema:
+        data:
+          dtype: int16
+          size: 480
+    out:
+      - audio_raw
+
+  vis:
+    language: python
+    # constructor: true
+    numba: false
+    in:
+      - audio_raw
+    out:
+      async: True
+      name: audio_plot
+      args:
+        type: iplot
+    # out:
+    #   - fft
+
+  # bpm:
+  #   language: python
+  #   constructor: true
+  #   numba: false
+  #   in:
+  #     - audio_raw
+  #   out:
+  #     - bpm
+
+  # wled_out:
+  #   language: python
+  #   in:
+  #     - sine_wave
+  #   out:
+  #     name: wled_out
+  #     args:
+  #       type: wled_udp
+  #     schema:
+  #       data:
+
