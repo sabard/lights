@@ -6,8 +6,8 @@ import socket
 import time
 
 # UDP_IP = "wled-stairs.local"
-# UDP_IP = "127.0.0.1"
-UDP_IP = "172.17.2.73"  # stairs
+UDP_IP = "127.0.0.1"
+# UDP_IP = "172.17.2.73"  # stairs
 # UDP_IP = "172.17.2.71"
 # UDP_IP = "172.17.2.72"  # nook
 UDP_PORT = 21324
@@ -122,14 +122,14 @@ mIn = MidiKeyboard()
 # listener.start()
 
 ts = {
-    "red": 0,
-    "green": 0,
-    "blue": 0,
+    "red": 50,
+    "green": 10,
+    "blue": 30,
 }
 vals = {
-    "red": 0,
-    "green": 0,
-    "blue": 0,
+    "red": 120,
+    "green": 120,
+    "blue": 255,
 }
 dts = {
     "red": SEND_PERIOD,

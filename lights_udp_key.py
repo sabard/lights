@@ -5,10 +5,10 @@ import socket
 import time
 
 # UDP_IP = "wled-stairs.local"
-# UDP_IP = "127.0.0.1"
+UDP_IP1 = "127.0.0.1"
 # UDP_IP = "172.17.2.73" # stairs
-UDP_IP1 = "172.17.2.71"  # hall
-UDP_IP2 = "172.17.2.72"  # nook
+# UDP_IP1 = "172.17.2.71"  # hall
+# UDP_IP2 = "172.17.2.72"  # nook
 # UDP_IP2 = "172.17.2.74"  # bed
 UDP_PORT = 21324
 
@@ -57,7 +57,7 @@ def set_segment(start, end, r, g, b):
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(m, (UDP_IP1, UDP_PORT))
-    sock.sendto(m, (UDP_IP2, UDP_PORT))
+    # sock.sendto(m, (UDP_IP2, UDP_PORT))
 
 
 def on_press(key):
