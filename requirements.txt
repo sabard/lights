@@ -8,12 +8,54 @@ cffi==1.16.0
     # via sounddevice
 colormath==3.0.0
     # via -r requirements.in
+contourpy==1.2.1
+    # via matplotlib
+cycler==0.12.1
+    # via
+    #   licorice
+    #   matplotlib
+cython==3.0.10
+    # via licorice
+fonttools==4.53.0
+    # via matplotlib
+jinja2==3.1.4
+    # via licorice
+kiwisolver==1.4.5
+    # via matplotlib
+licorice @ git+https://github.com/bil/licorice.git@main
+    # via -r requirements.in
+llvmlite==0.42.0
+    # via
+    #   licorice
+    #   numba
+markupsafe==2.1.5
+    # via jinja2
+matplotlib==3.9.0
+    # via licorice
+msgpack==1.0.8
+    # via licorice
 networkx==3.3
     # via colormath
+numba==0.59.1
+    # via licorice
 numpy==1.26.4
     # via
     #   -r requirements.in
     #   colormath
+    #   contourpy
+    #   licorice
+    #   matplotlib
+    #   numba
+    #   scipy
+    #   sharedarray
+packaging==24.0
+    # via matplotlib
+pillow==10.3.0
+    # via matplotlib
+posix-ipc==1.1.1
+    # via licorice
+psutil==5.9.8
+    # via licorice
 pycparser==2.22
     # via cffi
 pygame==2.5.2
@@ -40,7 +82,23 @@ pyobjc-framework-quartz==10.3
     #   pynput
     #   pyobjc-framework-applicationservices
     #   pyobjc-framework-coretext
+pyparallel==0.2.2
+    # via licorice
+pyparsing==3.1.2
+    # via matplotlib
+python-dateutil==2.9.0.post0
+    # via matplotlib
+pyyaml==6.0.1
+    # via licorice
+scipy==1.13.1
+    # via licorice
+sharedarray==3.2.3
+    # via licorice
 six==1.16.0
-    # via pynput
+    # via
+    #   pynput
+    #   python-dateutil
 sounddevice==0.4.7
     # via -r requirements.in
+toposort==1.10
+    # via licorice

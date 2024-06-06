@@ -1,3 +1,6 @@
+git+https://github.com/bil/licorice.git@main
+# -e file:/Users/sabard/dev/bil/licorice#egg=licorice
+
 colormath
 numpy
 pygame
