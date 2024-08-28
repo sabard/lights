@@ -12,6 +12,8 @@ UDP_IP = "127.0.0.1"
 # UDP_IP = "172.17.2.72"  # nook
 UDP_PORT = 21324
 
+UDP_IP = "172.17.3.41"  # white
+
 RESET_SEC = 10
 
 PYGAME_MIDI_DEVICE=0

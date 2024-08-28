@@ -5,17 +5,34 @@ import socket
 import time
 
 # UDP_IP = "wled-stairs.local"
-UDP_IP1 = "127.0.0.1"
+# home
+# UDP_IP1 = "127.0.0.1"
 # UDP_IP = "172.17.2.73" # stairs
 # UDP_IP1 = "172.17.2.71"  # hall
-# UDP_IP2 = "172.17.2.72"  # nook
+# UDP_IP1 = "172.17.2.72"  # nook
 # UDP_IP2 = "172.17.2.74"  # bed
+
+# studio
+# UDP_IP1 = "172.17.3.41"  # strip
+UDP_IP1 = "172.17.3.43"  # par
+
 UDP_PORT = 21324
 
+TIMEOUT = 10
 PYGAME_MIDI_DEVICE=0
 
-segment_chars = "qwertyuiop"
-num_leds = 120
+# segment_chars = "qwertyuiop"
+# num_leds = 120
+
+# num_leds = 16
+# segment_chars = "qwertyuiasdfghjk"
+
+# num_leds = 8
+# segment_chars = "qwertyui"
+
+num_leds = 4
+segment_chars = "qwer"
+
 leds_per_key = num_leds // len(segment_chars)
 
 red_val = 0
@@ -45,13 +62,15 @@ class MidiKeyboard():
 def set_segment(start, end, r, g, b):
     m = []
     m.append(1)
-    m.append(10)
+    m.append(TIMEOUT)
 
     for i in range(start, end):
         m.append(i)  # Index of pixel to change
         m.append(r)  # Pixel red value
         m.append(g)  # Pixel green value
         m.append(b)  # Pixel blue value
+
+    print(m)
 
     m = bytes(m)
 
@@ -72,6 +91,7 @@ def on_press(key):
 
     start_idx = segment_chars.index(c) * leds_per_key
     end_idx = start_idx + leds_per_key
+    print("on: ", start_idx, end_idx)
     set_segment(start_idx, end_idx, red_val, green_val, blue_val)
 
 
@@ -85,6 +105,7 @@ def on_release(key):
 
     start_idx = segment_chars.index(c) * leds_per_key
     end_idx = start_idx + leds_per_key
+    print("off: ", start_idx, end_idx)
     set_segment(start_idx, end_idx, 0, 0, 0)
 
 
