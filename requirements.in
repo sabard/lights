@@ -6,3 +6,4 @@ numpy
 pygame
 pynput
 sounddevice
+scipy

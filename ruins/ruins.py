@@ -1,6 +1,8 @@
+import os
+
 from collections.abc import Iterable
 import numpy as np
-from pynput import keyboard
+# from pynput import keyboard
 import pygame
 import pygame.midi
 import socket
@@ -15,6 +17,7 @@ from scipy import signal as sps
 
 # PAR_IP = "127.0.0.1"
 # PAR_PORT = 21325
+# PYGAME_MIDI_DEVICE = None
 
 # studio
 # STRIP_IP = "172.17.3.41"
@@ -23,16 +26,16 @@ from scipy import signal as sps
 # PAR_IP = "172.17.3.43"
 # PAR_PORT = 21324
 
-# shaker
+# prod
 STRIP_IP = "192.168.88.21"
 STRIP_PORT = 21324
 
 PAR_IP = "192.168.88.20"
 PAR_PORT = 21324
+PYGAME_MIDI_DEVICE=3
 
 
 TIMEOUT = 2
-PYGAME_MIDI_DEVICE=0
 
 NUM_PARS = 4
 NUM_STRIP_LEDS = 16
@@ -58,7 +61,8 @@ class MidiKeyboard():
                 red_val = 255  # default to red
                 self.midiDevice = None
             else:
-                self.midiDevice = pygame.midi.Input(PYGAME_MIDI_DEVICE, 100)
+                device = PYGAME_MIDI_DEVICE if PYGAME_MIDI_DEVICE is not None else pygame.midi.get_default_input_id()
+                self.midiDevice = pygame.midi.Input(device, 100)
 
         except Exception as e:
             print(e)
@@ -227,33 +231,71 @@ def make_array(color, num, pre=np.empty(0), post=np.empty(0)):
 def random_color(max_val=255):
     return int(np.random.random() * max_val)
 
-def random_rgbw(max_val=255, white=False, reduce_white=False):
+def random_rgbw(max_val=255, white=False, reduce_w=False):
     white_val = random_color(max_val) if white else 0
     rgb_color = (
         random_color(max_val), # r
         random_color(max_val), # g
         random_color(max_val), # b
     )
-    if reduce_white:
-        rgb_color = reduce_white(rgb_color, 1)
+    if reduce_w:
+        rgb_color = reduce_white(*rgb_color, 1)
     return np.array([
             *rgb_color,
             white_val # w
         ])
 
+chosen_rgbs = [
+    (255,164,0), # bright orange
+    (254,80,0), # construction orange
+    (255,133,15), # turmeric
+    (255,153,19), # goldfish orange
+    (220,88,42), # dark orange
+    (161,0,14), # rich red
+    (122, 33, 16), # pacific blue complimentary rust red
+    (199, 45, 16), # pacific blue complimentary orange red
+    (134,38,51), # maroon
+    (255,188,217), # cotton candy pink
+    (18, 173, 179), # bright orange complimentary teal
+    (32, 18, 179), # bright orange complimentary dark blue
+    (5,169,199), # pacific blue
+    (21,96,189), # denim blue
+    (197,180,227), # light purple
+    (153,186,221), # carolina blue
+    (0,174,239), # comic book blue
+    (198,161,207), # lilac
+    (207,87,138), # mulberry
+]
+
+def pick_rgbw(max_val=255, white=False, reduce_w=False):
+    global chosen_rgbs
+
+    white_val = random_color(max_val) if white else 0
+    rgb_index = np.random.randint(0, len(chosen_rgbs))
+    rgb_color = chosen_rgbs[rgb_index]
+    if reduce_w:
+        rgb_color = reduce_white(*rgb_color, 1)
+    return np.array([
+            *rgb_color,
+            white_val # w
+        ])
+
+
 def calculate_color(m1, m2, i, num_sends):
     return (m1 - (m1 - m2) * 1. * i / num_sends).astype(int)
 
-def fade_colors(m1, m2, num_sends, send_rate):
+def fade_colors(m1, m2, num_sends, send_rate, brightness_factor=3):
+    par_pick = np.random.randint(0,4)
+
     for i in range(num_sends):
         # calculate color
         c = calculate_color(m1, m2, i, num_sends)
+        c = c // brightness_factor
 
         # send color
         set_segment_par(0, NUM_PARS, c[:,0], c[:,1], c[:,2], c[:,3])
 
-
-        set_segment_strip(0, NUM_STRIP_LEDS, 255, 0, 0, 0)
+        set_segment_strip(0, NUM_STRIP_LEDS, c[par_pick,0], c[par_pick,1], c[par_pick,2], 0)
 
         # wait
         time.sleep(send_rate)
@@ -342,7 +384,7 @@ def run_slowfade():
             time.sleep(.05)
 
 
-def run_separate(num_seconds=10, send_rate=.2):
+def run_separate(num_seconds=12, send_rate=.2):
 
     print("RUN SEPARATE")
 
@@ -361,8 +403,11 @@ def run_separate(num_seconds=10, send_rate=.2):
             return next_preset
 
         # pick color
-        start_c = random_rgbw()
-        m_start_c = np.tile(start_c, NUM_PARS).reshape(num_colors, NUM_PARS).dot(shuffled_eye)
+        # start_c = random_rgbw(reduce_w=True)
+        start_c = pick_rgbw(reduce_w=False)
+        print(start_c)
+        m_start_c = shuffled_eye.dot(np.tile(start_c, NUM_PARS).reshape(num_colors, NUM_PARS))
+        print(m_start_c)
         # TODO check for mismatched colors/pars
         m_rgb1 = m_start_c * shuffled_eye
 
@@ -383,23 +428,41 @@ def run_separate(num_seconds=10, send_rate=.2):
         print("start color to rgb1")
         fade_colors(m_start_c, m_rgb1, num_sends, send_rate)
 
+        next_preset = check_midi()
+        if next_preset is not None:
+            return next_preset
+
         shuffled_eye = create_shuffled_eye(NUM_PARS)
 
-        end_c = random_rgbw()
-        m_end_c =  np.tile(end_c, NUM_PARS).reshape(num_colors, NUM_PARS).dot(shuffled_eye)
+        # end_c = random_rgbw(reduce_w=True)
+        end_c = pick_rgbw(reduce_w=False)
+        print(end_c)
+        m_end_c =  shuffled_eye.dot(np.tile(end_c, NUM_PARS).reshape(num_colors, NUM_PARS))
         m_rgb2 = m_end_c * shuffled_eye
 
         # fade from rgb1 to rgb2
         print("rgb1 to rgb2")
         fade_colors(m_rgb1, m_rgb2, num_sends, send_rate)
 
+        next_preset = check_midi()
+        if next_preset is not None:
+            return next_preset
+
         # fade from rgb2 to end color
         print("rgb2 to end color")
         fade_colors(m_rgb2, m_end_c, num_sends, send_rate)
 
+        next_preset = check_midi()
+        if next_preset is not None:
+            return next_preset
+
         # fade from end color to rgb2
         print("end color to rgb2")
         fade_colors(m_end_c, m_rgb2, num_sends, send_rate)
+
+        next_preset = check_midi()
+        if next_preset is not None:
+            return next_preset
 
 
 
@@ -470,8 +533,68 @@ def run_swirl(colors=((255, 165, 0, 0),(0, 0, 255, 0))):
         if c2_val >= NUM_PARS:
             c2_val -= NUM_PARS
 
+def run_manual():
+
+    print("RUN MANUAL")
+
+    c = np.zeros((4,4), dtype=int)
+
+    while True:
+        if mIn.midiDevice:
+            if mIn.midiDevice.poll():
+                events = mIn.midiDevice.read(128)
+                ev_data = events[-1][0]
+                button = ev_data[1]
+                ev_value = ev_data[2]
+
+                print(button, ev_value)
+
+                if button == 14:
+                    c[0][0] = ev_value * 2
+                elif button == 15:
+                    c[0][1] = ev_value * 2
+                elif button == 16:
+                    c[0][2] = ev_value * 2
+
+                elif button == 17:
+                    c[1][0] = ev_value * 2
+                elif button == 18:
+                    c[1][1] = ev_value * 2
+                elif button == 19:
+                    c[1][2] = ev_value * 2
+
+                elif button == 20:
+                    c[2][0] = ev_value * 2
+                elif button == 21:
+                    c[2][1] = ev_value * 2
+                elif button == 22:
+                    c[2][2] = ev_value * 2
+
+                elif button == 3:
+                    c[3][0] = ev_value * 2
+                elif button == 4:
+                    c[3][1] = ev_value * 2
+                elif button == 5:
+                    c[3][2] = ev_value * 2
+
+                elif button == 67:
+                    if ev_value == 127:
+                        return True
+                elif button == 64:
+                    if ev_value == 127:
+                        return False
+
+
+
+        # print(c)
+
+        set_segment_par(0, NUM_PARS, c[:,0], c[:,1], c[:,2], c[:,3])
+
+        time.sleep(.05)
+
 
 presets = [
+    run_manual,
     run_slowfade,
     run_separate,
     run_swirl
@@ -482,7 +605,10 @@ def run_next(to_next=None):
     global preset_idx
 
     if to_next is None:
-        return run_slowfade()
+        # return run_manual()
+        # return run_swirl()
+        # return run_slowfade()
+        return run_separate()
     elif to_next:
         preset_idx += 1
         if preset_idx == len(presets):

@@ -10,13 +10,16 @@ import time
 # UDP_IP = "172.17.2.73"  # stairs
 # UDP_IP = "172.17.2.71"
 UDP_IP = "172.17.2.72"  # nook
+
+UDP_IP = "4.3.2.1"
+
 UDP_PORT = 21324
 
 RESET_SEC = 10
 
 PYGAME_MIDI_DEVICE=0
 
-SEND_RATE = 29  # Hz
+SEND_RATE = 30  # Hz
 SEND_PERIOD = 1. / SEND_RATE
 
 segment_chars = "qwertyuiop"
