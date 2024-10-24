@@ -4,7 +4,7 @@ import pygame.midi
 import socket
 import time
 
-UDP_IP1 = "4.3.2.1"
+# UDP_IP1 = "4.3.2.1"
 
 # UDP_IP = "wled-stairs.local"
 # home
@@ -16,7 +16,7 @@ UDP_IP1 = "4.3.2.1"
 
 # studio
 # UDP_IP1 = "172.17.3.41"  # strip
-# UDP_IP1 = "172.17.3.43"  # par
+UDP_IP1 = "172.17.3.43"  # par
 
 UDP_PORT = 21324
 # UDP_PORT = 21325
@@ -24,8 +24,8 @@ UDP_PORT = 21324
 TIMEOUT = 10
 PYGAME_MIDI_DEVICE=0
 
-segment_chars = "qwertyuiopasdfghjkl"
-num_leds = 240
+# segment_chars = "qwertyuiopasdfghjkl"
+# num_leds = 240
 
 # segment_chars = "qwertyuiop"
 # num_leds = 120
@@ -36,8 +36,8 @@ num_leds = 240
 # num_leds = 8
 # segment_chars = "qwertyui"
 
-# num_leds = 4
-# segment_chars = "qwer"
+num_leds = 4
+segment_chars = "qwer"
 
 leds_per_key = num_leds // len(segment_chars)
 

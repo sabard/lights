@@ -20,19 +20,19 @@ from scipy import signal as sps
 # PYGAME_MIDI_DEVICE = None
 
 # studio
-# STRIP_IP = "172.17.3.41"
-# STRIP_PORT = 21324
-
-# PAR_IP = "172.17.3.43"
-# PAR_PORT = 21324
-
-# prod
-STRIP_IP = "192.168.88.21"
+STRIP_IP = "172.17.3.41"
 STRIP_PORT = 21324
 
-PAR_IP = "192.168.88.20"
+PAR_IP = "172.17.3.43"
 PAR_PORT = 21324
-PYGAME_MIDI_DEVICE=3
+
+# prod
+# STRIP_IP = "192.168.88.21"
+# STRIP_PORT = 21324
+
+# PAR_IP = "192.168.88.20"
+# PAR_PORT = 21324
+PYGAME_MIDI_DEVICE=0
 
 
 TIMEOUT = 2
@@ -605,10 +605,10 @@ def run_next(to_next=None):
     global preset_idx
 
     if to_next is None:
-        # return run_manual()
+        return run_manual()
         # return run_swirl()
         # return run_slowfade()
-        return run_separate()
+        # return run_separate()
     elif to_next:
         preset_idx += 1
         if preset_idx == len(presets):
