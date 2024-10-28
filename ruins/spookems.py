@@ -8,7 +8,8 @@ from kasa import Discover, SmartPlug
 from midi import check_midi
 from utils import reduce_white
 
-FLICKER_DURATION = 10 # seconds
+FLICKER_DURATION = 3600 # seconds
+# FLICKER_DURATION = 10 # seconds
 SPOOKEM_DURATION = 60 # seconds
 
 SLEEP_TIME = 0.05 # 50ms

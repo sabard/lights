@@ -134,5 +134,7 @@ while True:
                 green_val = ev_value * 2
             elif button == 16:
                 blue_val = ev_value * 2
+
+            print(red_val, green_val, blue_val)
     else:
         time.sleep(1)

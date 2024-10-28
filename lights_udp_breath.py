@@ -6,7 +6,7 @@ import socket
 import time
 
 # UDP_IP = "wled-stairs.local"
-UDP_IP = "127.0.0.1"
+# UDP_IP = "127.0.0.1"
 # UDP_IP = "172.17.2.73"  # stairs
 # UDP_IP = "172.17.2.71"
 # UDP_IP = "172.17.2.72"  # nook
